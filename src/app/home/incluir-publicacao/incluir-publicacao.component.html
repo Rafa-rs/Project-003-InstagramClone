@@ -1,0 +1,46 @@
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="progressoPublicacao === 'pendente'">
+      <form [formGroup]="formulario" (ngSubmit)="publicar()">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Criar uma Publicação</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="file" class="form-control" accept="image/*" (change)="preparaImagemUpload($event)">
+          <input type="text" placeholder="Título da publicação" class="form-control" formControlName="titulo">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="submit" class="btn btn-primary">Publicar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-content" *ngIf="progressoPublicacao === 'andamento'">
+
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Publicação em andamento</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Progresso: {{ porcentagemUpload }} %
+      </div>
+
+    </div>
+
+    <div class="modal-content" *ngIf="progressoPublicacao === 'concluido'">
+
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Publicação realizada com sucesso</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Sua Publicação realizada com sucesso!
+      </div>
+
+
+    </div>
+  </div>
+</div>
