@@ -21,7 +21,8 @@ export class IncluirPublicacaoComponent implements OnInit {
   @Output() public atualizarTimeLine: EventEmitter<any> = new EventEmitter<any>()
 
   public email!: string
-  private image: any 
+  private image: any
+  public dataHora!: number
   
   public progressoPublicacao: string = 'pendente'
   public porcentagemUpload!: number
@@ -50,7 +51,8 @@ export class IncluirPublicacaoComponent implements OnInit {
     this.bd.publicar({
       email: this.email,
       titulo: this.formulario.value.titulo,
-      imagem: this.image[0]
+      imagem: this.image[0],
+      dataHora: Date.now()
     })
 
     let acompUpLoad= interval(1000)

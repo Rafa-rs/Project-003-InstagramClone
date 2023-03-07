@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core"
 
 import { getDatabase, ref, set, push, child, onValue, query, orderByKey } from "@firebase/database"
 import { getStorage, ref as ref2, uploadBytes, uploadBytesResumable, getDownloadURL} from "@firebase/storage"
+import { timestamp } from "rxjs"
 import { AnonymousSubject } from "rxjs/internal/Subject"
 
 import { Progresso } from "./progresso.service"
@@ -28,7 +29,7 @@ export class Bd {
         let email:string = publicacao.email
 
         //publicando no  Realtime database
-        push(ref(dataBase,`publicacoes/${Buffer.from(email).toString('base64')}`), {titulo: publicacao.titulo})
+        push(ref(dataBase,`publicacoes/${Buffer.from(email).toString('base64')}`), {titulo: publicacao.titulo, dataHora: publicacao.dataHora})
             .then((resultado)=>{
                 let nomeImagem = resultado.key
                 const refStorage = ref2(storage, `imagens/${nomeImagem}`)
@@ -74,6 +75,82 @@ export class Bd {
 
     }
 
+    
+    
+    
+    public consultaPublicacoes(emailUsuario:string):Promise<any> {
+
+        return new Promise((resolve, reject) => {
+
+            window.Buffer = window.Buffer || require('buffer').Buffer
+
+            
+            //Consultar as publicações (database)
+            const dataBase= getDatabase()
+            
+            const refPublicacoes= query(ref(dataBase,`publicacoes/${Buffer.from(emailUsuario).toString('base64')}`), orderByKey())
+            let publicacoes: Array<any> = []
+
+            new Promise((resolve, reject) => {
+
+                
+                onValue(refPublicacoes, (snapshot) => {
+                    //console.log('snapshot: ', snapshot.val())
+
+                    //let publicacoes: Array<any> = []
+
+                    snapshot.forEach((childSnapshot:any) => {
+                        let publicacao = childSnapshot.val()
+                        publicacao.key = childSnapshot.key
+                        
+                        publicacoes.push(publicacao)
+                    })
+
+                    resolve(publicacoes.reverse())
+                })
+
+                
+            })
+            .then((publicacoes:any)=> {
+                //console.log('Test B: ',publicacoes)
+                
+                publicacoes.forEach((publicacao:any) =>{
+                    //consultar a url da imagem (storage)
+                    const storage = getStorage()
+                    const refStorage = ref2(storage, `imagens/${publicacao.key}`)
+                    getDownloadURL(refStorage)
+                    .then((url:string)=>{
+                        
+                        //incluindo atributo url_imagem
+                        publicacao.url_imagem = url
+                                                
+
+                        //consultar o nome do usuario
+                        onValue(ref(dataBase,`usuario_detalhe/${Buffer.from(emailUsuario).toString('base64')}`),
+                        (snapshot) => {
+                            publicacao.nome_usuario = snapshot.val().nomeUsuario
+                            
+                        })
+
+                        
+
+                    })
+                })
+            })
+
+            resolve(publicacoes)
+
+           
+            
+        })
+        
+               
+
+    }
+    
+    
+
+    /*
     public consultaPublicacoes(emailUsuario:string):Promise<any> {
 
         return new Promise((resolve, reject) => {
@@ -86,10 +163,9 @@ export class Bd {
             
             const refPublicacoes= query(ref(dataBase,`publicacoes/${Buffer.from(emailUsuario).toString('base64')}`), orderByKey())
 
-            onValue(refPublicacoes, 
-            (snapshot) => {
-                console.log(snapshot.val())
-                            
+            onValue(refPublicacoes, (snapshot) => {
+                console.log('snapshot: ', snapshot.val())
+
                 let publicacoes: Array<any> = []
 
                 //percorrer array
@@ -117,18 +193,48 @@ export class Bd {
                         
 
                     })
+
                 })
 
                 resolve(publicacoes)
-
+                
             },{
                 onlyOnce:true
             })
-
+            
+            
         })
-
         
-         
+               
 
     }
+    */
+
 }
+
+/*
+
+let publicacao = childSnapshot.val()
+
+                    //consultar a url da imagem (storage)
+                    const storage = getStorage()
+                    const refStorage = ref2(storage, `imagens/${childSnapshot.key}`)
+                    getDownloadURL(refStorage)
+                    .then((url:string)=>{
+                        
+                        //incluindo atributo url_imagem
+                        publicacao.url_imagem = url
+
+                        //consultar o nome do usuario
+                        onValue(ref(dataBase,`usuario_detalhe/${Buffer.from(emailUsuario).toString('base64')}`),
+                        (snapshot) => {
+                            publicacao.nome_usuario = snapshot.val().nomeUsuario
+
+                            publicacoes.push(publicacao)
+                        })
+
+                        
+
+                    })
+
+*/

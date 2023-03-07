@@ -10,7 +10,7 @@ import {getAuth, onAuthStateChanged } from '@firebase/auth'
 export class PublicacoesComponent implements OnInit {
 
   public email!: string
-  public publicacoes: any
+  public publicacoes!: Array<any>
 
   constructor(private bd:Bd) { }
 
@@ -29,11 +29,11 @@ export class PublicacoesComponent implements OnInit {
   public atualizarTimeLine():void{
     
     this.bd.consultaPublicacoes(this.email)
-    .then((publicacoes:any) => {
+    .then((publicacoes:Array<any>) => {
 
       this.publicacoes = publicacoes
 
-      console.log(this.publicacoes)
+      //console.log('publicacoes.component: ', this.publicacoes)
 
     })
 
