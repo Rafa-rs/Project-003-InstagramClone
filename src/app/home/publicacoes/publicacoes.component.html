@@ -4,8 +4,8 @@
       <div class="card-body">
         <p class="card-text"><strong>{{ publicacoes.nome_usuario }}</strong></p>
       </div>
-
-      <img class="card-img" [src]="publicacoes.url_imagem" />
+      <!-- caso a imagem demore a ser carregada, carregar vazio:  || '' -->
+      <img class="card-img" [src]="publicacoes.url_imagem || ''" />
 
       <div class="card-body">
         <p class="card-text">
@@ -18,3 +18,4 @@
     </div>
   </div>
 </div>
+
